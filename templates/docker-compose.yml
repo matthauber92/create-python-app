@@ -1,0 +1,38 @@
+version: '3'
+services:
+  python:
+    container_name: python_dev
+    build:
+      context: .
+      dockerfile: .Dockerfile
+    ports:
+      - '8000:15400'
+    volumes:
+      - .:/app
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  pg:
+    container_name: postgres_dev
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    expose:
+      - '5432'
+    ports:
+      - '5432:5432'
+
+volumes:
+  postgres_data:
