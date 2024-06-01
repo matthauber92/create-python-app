@@ -58,12 +58,9 @@ async def auth_google(google_payload: GooglePayload):
       "grant_type": "authorization_code",
     }
     response = requests.post(token_url, data=data)
-    print(response, "RESPONSE")
     access_token = response.json()
-    print(access_token, "TOKEN")
     user_info = requests.get("https://www.googleapis.com/oauth2/v1/userinfo",
                              headers={"Authorization": f"Bearer {access_token}"})
-    print(user_info, "USER")
     return user_info.json()
   except requests.exceptions.RequestException as e:
     raise HTTPException(status_code=500, detail=f"Error communicating with Google: {str(e)}")
